@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: api-image-build-push
+spec:
+  inputs:
+    resources:
+      - name: alcatraz-resource
+        type: git
+    params:
+      - name: api-dockerfile
+        default: /alcatraz/api/Dockerfile
+      - name: context
+        default: /alcatraz/api
+  outputs:
+    resources:
+      - name: built-api-image
+        type: image
+  steps:
+    - name: api-build-push
+      image: gcr.io/kaniko-project/executor
+      command:
+        - /kaniko/executor
+      args:
+        - --dockerfile=${inputs.params.api-dockerfile}
+        - --destination=${outputs.resources.built-api-image.url}
+        - --context=${inputs.params.context}

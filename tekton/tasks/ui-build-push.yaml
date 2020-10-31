@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ui-image-build-push
+spec:
+  inputs:
+    resources:
+      - name: alcatraz-resource
+        type: git
+    params:
+      - name: ui-dockerfile
+        default: /alcatraz/ui/Dockerfile
+      - name: context
+        default: /alcatraz/ui
+  outputs:
+    resources:
+      - name: built-ui-image
+        type: image
+  steps:
+    - name: ui-build-push
+      image: gcr.io/kaniko-project/executor
+      command:
+        - /kaniko/executor
+      args:
+        - --dockerfile=${inputs.params.ui-dockerfile}
+        - --destination=${outputs.resources.built-ui-image.url}
+        - --context=${inputs.params.context}
