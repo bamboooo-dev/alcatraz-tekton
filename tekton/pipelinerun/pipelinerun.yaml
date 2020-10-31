@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: image-pipelinerun
+spec:
+  serviceAccountName: image-builder
+  pipelineRef:
+    name: image-pipeline
+  resources:
+    - name: alcatraz-git
+      resourceRef:
+        name: alcatraz-git
+    - name: built-api-image
+      resourceRef:
+        name: alcatraz-api-image
+    - name: built-ui-image
+      resourceRef:
+        name: alcatraz-ui-image
