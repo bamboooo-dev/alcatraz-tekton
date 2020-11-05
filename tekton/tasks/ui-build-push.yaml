@@ -1,27 +1,34 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ui-image-build-push
 spec:
-  inputs:
-    resources:
+  params:
+    - name: pathToDockerfile
+      type: string
+      description: The path to the dockerfile of alcatraz-ui to build
+      default: $(resources.inputs.alcatraz-resource.path)/Dockerfile
+    - name: pathToContext
+      type: string
+      description: |
+        The build context used by Kaniko
+      default: $(resources.inputs.alcatraz-resource.path)
+  resources:
+    inputs:
       - name: alcatraz-resource
         type: git
-    params:
-      - name: ui-dockerfile
-        default: /alcatraz/ui/Dockerfile
-      - name: context
-        default: /alcatraz/ui
-  outputs:
-    resources:
+    outputs:
       - name: built-ui-image
         type: image
   steps:
     - name: ui-build-push
-      image: gcr.io/kaniko-project/executor
+      image: gcr.io/kaniko-project/executor:latest
+      # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
+      env:
+        - name: "DOCKER_CONFIG"
+          value: "/tekton/home/.docker/"
       command:
         - /kaniko/executor
-      args:
-        - --dockerfile=${inputs.params.ui-dockerfile}
-        - --destination=${outputs.resources.built-ui-image.url}
-        - --context=${inputs.params.context}
+      args: ["--dockerfile=$(params.pathToDockerfile)",
+             "--context=$(params.pathToContext)",
+             "--destination=$(resources.outputs.built-ui-image.url)"]

@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: image-pipeline
@@ -14,6 +14,11 @@ spec:
     - name: api-image-build-push
       taskRef:
         name: api-image-build-push
+      params:
+        - name: pathToDockerfile
+          value: /workspace/alcatraz-resource/api/Dockerfile
+        - name: pathToContext
+          value: /workspace/alcatraz-resource/api
       resources:
         inputs:
           - name: alcatraz-resource
@@ -24,6 +29,11 @@ spec:
     - name: ui-image-build-push
       taskRef:
         name: ui-image-build-push
+      params:
+        - name: pathToDockerfile
+          value: /workspace/alcatraz-resource/ui/Dockerfile
+        - name: pathToContext
+          value: /workspace/alcatraz-resource/ui
       resources:
         inputs:
           - name: alcatraz-resource
