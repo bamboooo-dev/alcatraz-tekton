@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: alcatraz-git
+spec:
+  type: git
+  params:
+    - name: url
+      value: https://github.com/bamboooo-dev/alcatraz.git
+    - name: revision
+      value: main

@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: image-pipeline
+spec:
+  resources:
+    - name: alcatraz-git
+      type: git
+    - name: built-api-image
+      type: image
+    - name: built-ui-image
+      type: image
+  tasks:
+    - name: api-image-build-push
+      taskRef:
+        name: api-image-build-push
+      params:
+        - name: pathToDockerfile
+          value: /workspace/alcatraz-resource/api/Dockerfile
+        - name: pathToContext
+          value: /workspace/alcatraz-resource/api
+      resources:
+        inputs:
+          - name: alcatraz-resource
+            resource: alcatraz-git
+        outputs:
+          - name: built-api-image
+            resource: built-api-image
+    - name: ui-image-build-push
+      taskRef:
+        name: ui-image-build-push
+      params:
+        - name: pathToDockerfile
+          value: /workspace/alcatraz-resource/ui/Dockerfile
+        - name: pathToContext
+          value: /workspace/alcatraz-resource/ui
+      resources:
+        inputs:
+          - name: alcatraz-resource
+            resource: alcatraz-git
+        outputs:
+          - name: built-ui-image
+            resource: built-ui-image
+      runAfter:
+        - api-image-build-push
