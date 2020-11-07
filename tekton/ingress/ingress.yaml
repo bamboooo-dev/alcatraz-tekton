@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: alcatraz-tekton-trigger
+  labels:
+    app: tekton-trigger
+  annotations:
+    kubernetes.io/ingress.class: "nginx-alcatraz-triggers"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: el-alcatraz-tekton-listener
+          servicePort: 8080
