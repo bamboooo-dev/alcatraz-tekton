@@ -2,7 +2,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: alcatraz-tekton-triggertemplate
-  namespace: default
+  namespace: tekton-pipelines
 spec:
   params:
     - name: gitrevision
@@ -50,13 +50,13 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
   name: alcatraz-tekton-pipelinebinding
-  namespace: default
+  namespace: tekton-pipelines
 spec:
   params:
     - name: gitrevision
       value: $(body.head_commit.id)
     - name: namespace
-      value: default
+      value: tekton-pipelines
     - name: gitrepositoryurl
       value: "https://github.com/$(body.repository.full_name)"
 
@@ -66,7 +66,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: alcatraz-tekton-listener
-  namespace: default
+  namespace: tekton-pipelines
 spec:
   serviceAccountName: tekton-triggers-admin
   triggers:
