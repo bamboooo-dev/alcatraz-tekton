@@ -1,0 +1,79 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: alcatraz-tekton-triggertemplate
+  namespace: tekton-ci
+spec:
+  params:
+    - name: gitrevision
+      description: The git revision
+      default: main
+    - name: gitrepositoryurl
+      description: The git repository url
+    - name: namespace
+      description: The namespace to create the resources
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: image-pipeline-run-$(uid)
+        namespace: $(tt.params.namespace)
+      spec:
+        serviceAccountName: tekton-triggers-admin
+        pipelineRef:
+          name: image-pipeline
+        resources:
+          - name: alcatraz-git
+            resourceSpec:
+              type: git
+              params:
+              - name: revision
+                value: $(tt.params.gitrevision)
+              - name: url
+                value: $(tt.params.gitrepositoryurl)
+          - name: built-api-image
+            resourceSpec:
+              type: image
+              params:
+                - name: url
+                  value: bamboooo/alcatraz-api  # docker-repo-location.com/repo:getting-started
+          - name: built-ui-image
+            resourceSpec:
+              type: image
+              params:
+                - name: url
+                  value: bamboooo/alcatraz-ui  # docker-repo-location.com/repo:getting-started
+
+---
+
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: alcatraz-tekton-pipelinebinding
+  namespace: tekton-ci
+spec:
+  params:
+    - name: gitrevision
+      value: $(body.head_commit.id)
+    - name: namespace
+      value: tekton-ci
+    - name: gitrepositoryurl
+      value: "https://github.com/$(body.repository.full_name)"
+
+---
+
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: alcatraz-tekton-listener
+  namespace: tekton-ci
+spec:
+  serviceAccountName: tekton-triggers-admin
+  resources:
+    kubernetesResource:
+      serviceType: NodePort
+  triggers:
+    - bindings:
+      - ref: alcatraz-tekton-pipelinebinding
+      template:
+        ref: alcatraz-tekton-triggertemplate
