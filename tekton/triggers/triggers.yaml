@@ -77,3 +77,6 @@ spec:
       - ref: alcatraz-tekton-pipelinebinding
       template:
         ref: alcatraz-tekton-triggertemplate
+      interceptors:
+        - cel:
+            filter: body.ref == "refs/heads/main"
