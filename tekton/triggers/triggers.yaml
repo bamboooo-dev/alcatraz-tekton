@@ -43,6 +43,12 @@ spec:
               params:
                 - name: url
                   value: bamboooo/alcatraz-ui  # docker-repo-location.com/repo:getting-started
+          - name: manifest-git
+            resourceSpec:
+              type: git
+              params:
+              - name: revision
+                value: $(tt.params.gitrevision)
 
 ---
 
@@ -77,3 +83,6 @@ spec:
       - ref: alcatraz-tekton-pipelinebinding
       template:
         ref: alcatraz-tekton-triggertemplate
+      interceptors:
+        - cel:
+            filter: body.ref == "refs/heads/main"

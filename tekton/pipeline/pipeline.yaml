@@ -10,6 +10,8 @@ spec:
       type: image
     - name: built-ui-image
       type: image
+    - name: manifest-git
+      type: git
   tasks:
     - name: api-image-build-push
       taskRef:
@@ -43,3 +45,12 @@ spec:
             resource: built-ui-image
       runAfter:
         - api-image-build-push
+    - name: create-pr
+      taskRef:
+        name: create-pr
+      resources:
+        inputs:
+          - name: manifest-git
+            resource: manifest-git
+      runAfter:
+        - ui-image-build-push

@@ -16,3 +16,6 @@ spec:
     - name: built-ui-image
       resourceRef:
         name: alcatraz-ui-image
+    - name: manifest-git
+      resourceRef:
+        name: manifest-git
