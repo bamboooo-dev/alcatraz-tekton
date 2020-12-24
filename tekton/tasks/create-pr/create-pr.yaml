@@ -9,12 +9,14 @@ spec:
         type: git
   steps:
     - name: create-pr
-      image: ubuntu
+      image: prontotools/alpine-git-curl
       script: |
-        #! /usr/bin/env bash
         git clone $(resources.inputs.manifest-git.url)
-        sed -e "20c\    tag: $(resources.inputs.manifest-git.revision)" ./alcatraz-manifests/helm/alcatraz-api/values.yaml
-        sed -e "20c\    tag: $(resources.inputs.manifest-git.revision)" ./alcatraz-manifests/helm/alcatraz-ui/values.yaml
+        sed -i -e "20c\    tag: $(resources.inputs.manifest-git.revision)" ./alcatraz-manifests/helm/alcatraz-api/values.yaml
+        sed -i -e "20c\    tag: $(resources.inputs.manifest-git.revision)" ./alcatraz-manifests/helm/alcatraz-ui/values.yaml
+        cd ./alcatraz-manifests
+        git config --global user.email "kohei.yamamoto919@gmail.com"
+        git config --global user.name "yamagai"
         git add .
         git commit -m "Update image tags"
         git push origin main
