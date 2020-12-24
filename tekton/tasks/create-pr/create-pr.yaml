@@ -12,8 +12,8 @@ spec:
       image: prontotools/alpine-git-curl
       script: |
         git clone $(resources.inputs.manifest-git.url)
-        sed -i -e "20c\    tag: $(resources.inputs.manifest-git.revision)" ./alcatraz-manifests/helm/alcatraz-api/values.yaml
-        sed -i -e "20c\    tag: $(resources.inputs.manifest-git.revision)" ./alcatraz-manifests/helm/alcatraz-ui/values.yaml
+        sed -i -e "20c\    tag: $(resources.inputs.manifest-git.commit_hash)" ./alcatraz-manifests/helm/alcatraz-api/values.yaml
+        sed -i -e "20c\    tag: $(resources.inputs.manifest-git.commit_hash)" ./alcatraz-manifests/helm/alcatraz-ui/values.yaml
         cd ./alcatraz-manifests
         git config --global user.email "kohei.yamamoto919@gmail.com"
         git config --global user.name "yamagai"
