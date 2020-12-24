@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: create-pr
+spec:
+  resources:
+    inputs:
+      - name: manifest-git
+        type: git
+  steps:
+    - name: create-pr
+      image: ubuntu
+      script: |
+        #! /usr/bin/env bash
+        git clone $(resources.inputs.manifest-git.url)
+        sed -e "20c\    tag: $(resources.inputs.manifest-git.revision)" ./alcatraz-manifests/helm/alcatraz-api/values.yaml
+        sed -e "20c\    tag: $(resources.inputs.manifest-git.revision)" ./alcatraz-manifests/helm/alcatraz-ui/values.yaml
+        git add .
+        git commit -m "Update image tags"
+        git push origin main
+        curl \
+          -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/bamboooo-dev/alcatraz-manifests/pulls \
+          -d '{"title":"Update image tags", "head":"main","base":"stable"}'
