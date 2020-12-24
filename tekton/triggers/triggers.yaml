@@ -47,8 +47,8 @@ spec:
             resourceSpec:
               type: git
               params:
-              - name: revision
-                value: $(tt.params.gitrevision)
+              - name: commit_hash
+                value: $(tt.params.commit_hash)
 
 ---
 
@@ -65,6 +65,8 @@ spec:
       value: tekton-ci
     - name: gitrepositoryurl
       value: "https://github.com/$(body.repository.full_name)"
+    - name: commit_hash
+      value: $(body.before)
 
 ---
 
